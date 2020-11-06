@@ -4,4 +4,21 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Migrations\20201106215847_AddPhotopathColumn.cs" />
+    <Compile Remove="Migrations\20201106215847_AddPhotopathColumn.Designer.cs" />
+    <Compile Remove="Migrations\20201106220658_AddPhotopatDataColumn.cs" />
+    <Compile Remove="Migrations\20201106220658_AddPhotopatDataColumn.Designer.cs" />
+    <Compile Remove="Migrations\20201106220806_AddSomeProperty.cs" />
+    <Compile Remove="Migrations\20201106220806_AddSomeProperty.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
 </Project>

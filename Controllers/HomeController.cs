@@ -33,7 +33,6 @@ namespace Administration.Controllers
             {
                 Employee = _employeeRepository.GetEmployee(id ?? 1),
                 PageTitle = "Employee Details"
-
             };
 
             return View(homeDetailsViewModel);
