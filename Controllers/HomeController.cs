@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Administration.Controllers
 {
-   // [Route("[controller]")]
+    // [Route("[controller]")]
     public class HomeController : Controller
     {
         private iEmployeeRepository _employeeRepository;
@@ -17,33 +17,44 @@ namespace Administration.Controllers
         {
             _employeeRepository = employeeRepository;
         }
-     //   [Route("")]
-     //   [Route("[action]")]
-     //   [Route("~/")]
+        //   [Route("")]
+        //   [Route("[action]")]
+        //   [Route("~/")]
         public ViewResult Index()
         {
-            var model= _employeeRepository.GetAllEmployees();
+            var model = _employeeRepository.GetAllEmployees();
             return View(model);
         }
 
-     //   [Route("[action]/{id?}")]
+        //   [Route("[action]/{id?}")]
         public ViewResult Details(int? id)
         {
             HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel()
             {
-                Employee = _employeeRepository.GetEmployee(id??1),
+                Employee = _employeeRepository.GetEmployee(id ?? 1),
                 PageTitle = "Employee Details"
 
             };
 
             return View(homeDetailsViewModel);
         }
-
-        public ViewResult Create()
+        [HttpGet]
+        public ViewResult  Create()
         {
 
             return View();
 
+        }
+        [HttpPost]
+        public IActionResult Create(Employee employee)
+        {
+            if (ModelState.IsValid)
+            {
+                Employee newEmployee = _employeeRepository.Add(employee);
+                return RedirectToAction("details", new { id = newEmployee.Id });
+            }
+
+            return View();
         }
     }
 }
