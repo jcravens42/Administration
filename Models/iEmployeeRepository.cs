@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Administration.Models
 {
-    public interface iEmployeeRepository
+    public interface IEmployeeRepository
     {
         Employee GetEmployee(int Id);
         IEnumerable<Employee> GetAllEmployees();

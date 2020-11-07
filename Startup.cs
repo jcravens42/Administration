@@ -30,7 +30,7 @@ namespace Administration
             services.AddDbContextPool<AppDbContext>(
                 options => options.UseSqlServer(_config.GetConnectionString("AdministrationDBConnection")));
             services.AddMvc(option => option.EnableEndpointRouting = false);
-            services.AddScoped<iEmployeeRepository, SQLEmployeeRepository>();
+            services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

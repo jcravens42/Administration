@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Administration.Models
 {
-    public class SQLEmployeeRepository : iEmployeeRepository
+    public class SQLEmployeeRepository : IEmployeeRepository
     {
         private readonly AppDbContext context;
 

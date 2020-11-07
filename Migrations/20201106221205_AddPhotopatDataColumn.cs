@@ -6,7 +6,7 @@ namespace Administration.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AddColumn<string>( 
                 name: "PhotoPath",
                 table: "Employees",
                 nullable: true);

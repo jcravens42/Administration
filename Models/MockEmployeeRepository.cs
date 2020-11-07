@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Administration.Models
 {
-    public class MockEmployeeRepository : iEmployeeRepository
+    public class MockEmployeeRepository : IEmployeeRepository
     {
         private List<Employee> _employeeList;
 
