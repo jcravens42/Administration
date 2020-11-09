@@ -41,6 +41,7 @@ namespace Administration
             }
             else
             {
+                app.UseStatusCodePagesWithReExecute("/Error/{0}");
                 app.UseExceptionHandler("/Error");
             }
 

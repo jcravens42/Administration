@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
+using Microsoft.Extensions.Logging;
+
 
 namespace Administration.Controllers
 {
@@ -11,13 +13,16 @@ namespace Administration.Controllers
     public class HomeController : Controller
     {
         private readonly IEmployeeRepository _employeeRepository;
-        private readonly IHostingEnvironment hostingEnvironment;
+        private readonly IWebHostEnvironment hostingEnvironment;
+        private readonly ILogger logger;
 
         public HomeController(IEmployeeRepository employeeRepository,
-                              IHostingEnvironment hostingEnvironment)
+                              IWebHostEnvironment hostingEnvironment,
+                              ILogger logger)
         {
             _employeeRepository = employeeRepository;
             this.hostingEnvironment = hostingEnvironment;
+            this.logger = logger;
         }
         //   [Route("")]
         //   [Route("[action]")]
@@ -31,6 +36,15 @@ namespace Administration.Controllers
         //   [Route("[action]/{id?}")]
         public ViewResult Details(int? id)
         {
+            //throw new Exception("Error in Details View");
+
+            logger.LogTrace("Trace Log");
+            logger.LogDebug("Debug Log");
+            logger.LogInformation("Information Log");
+            logger.LogWarning("Warning Log");
+            logger.LogError("Error Log");
+            logger.LogCritical("Critical Log");
+
             Employee employee = _employeeRepository.GetEmployee(id.Value);
 
             if (employee == null)
