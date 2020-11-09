@@ -39,32 +39,18 @@ namespace Administration
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+            }
 
-            //app.UseRouting();
-            //app.UseDefaultFiles();
             app.UseStaticFiles();
-            //app.UseMvc();
-            //app.UseMvcWithDefaultRoute();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
 
-
-            app.Run(async (context) =>
-            {
-
-                await context.Response.WriteAsync("Hello World!!");
-            });
-
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapGet("/", async context =>
-            //    {
-            //        await context.Response.WriteAsync("Hello World!");
-            //    });
-            //});
         }
     }
 }
