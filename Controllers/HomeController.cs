@@ -14,11 +14,11 @@ namespace Administration.Controllers
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IWebHostEnvironment hostingEnvironment;
-        private readonly ILogger logger;
+        private readonly ILogger<HomeController> logger;
 
         public HomeController(IEmployeeRepository employeeRepository,
                               IWebHostEnvironment hostingEnvironment,
-                              ILogger logger)
+                              ILogger<HomeController> logger)
         {
             _employeeRepository = employeeRepository;
             this.hostingEnvironment = hostingEnvironment;
