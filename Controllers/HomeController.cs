@@ -5,11 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace Administration.Controllers
 {
     // [Route("[controller]")]
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IEmployeeRepository _employeeRepository;
@@ -27,6 +28,7 @@ namespace Administration.Controllers
         //   [Route("")]
         //   [Route("[action]")]
         //   [Route("~/")]
+        [AllowAnonymous]
         public ViewResult Index()
         {
             var model = _employeeRepository.GetAllEmployees();
@@ -34,6 +36,7 @@ namespace Administration.Controllers
         }
 
         //   [Route("[action]/{id?}")]
+        [AllowAnonymous]
         public ViewResult Details(int? id)
         {
             //throw new Exception("Error in Details View");
