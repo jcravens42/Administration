@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Administration.Utilities;
 
 namespace Administration.ViewModels
 {
@@ -10,6 +12,8 @@ namespace Administration.ViewModels
     {
         [Required]
         [EmailAddress]
+        [Remote(action: "IsEmailInUse", controller: "Account")]
+        [ValidEmailDomain(allowedDomain: "transyardtech.com", ErrorMessage = "Email Domain must be TransYardTech.com" )]
         public string Email { get; set; }
 
         [Required]
@@ -21,6 +25,7 @@ namespace Administration.ViewModels
         [Compare("Password",
             ErrorMessage = "Password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+        public bool InternalUser { get; set; }
 
     }
 }
