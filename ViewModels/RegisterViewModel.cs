@@ -13,7 +13,8 @@ namespace Administration.ViewModels
         [Required]
         [EmailAddress]
         [Remote(action: "IsEmailInUse", controller: "Account")]
-        [ValidEmailDomain(allowedDomain: "transyardtech.com", ErrorMessage = "Email Domain must be TransYardTech.com" )]
+        //As this is to be a internal site, when company is established, the below line can be un remarked.
+        //[ValidEmailDomain(allowedDomain: "transyardtech.com", ErrorMessage = "Email Domain must be TransYardTech.com" )]
         public string Email { get; set; }
 
         [Required]
