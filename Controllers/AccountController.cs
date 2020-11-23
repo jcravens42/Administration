@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Administration.Models;
 using Microsoft.Extensions.Logging;
-
+using System.Linq;
 
 namespace Administration.Controllers
 {
@@ -71,6 +71,12 @@ namespace Administration.Controllers
                 // SignInManager and redirect to index action of HomeController
                 if (result.Succeeded)
                 {
+                    if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                    {
+                        return RedirectToAction("ListUsers", "Administration");
+                    }
+
+
                     await signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("index", "home");
                 }
@@ -121,9 +127,6 @@ namespace Administration.Controllers
             return View(model);
         }
 
-
-
-
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
@@ -131,6 +134,16 @@ namespace Administration.Controllers
             return RedirectToAction("index", "home");
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+        
+
+       
     }
 }
 

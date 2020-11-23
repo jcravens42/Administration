@@ -8,19 +8,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Administration.Controllers
 {
+    [Authorize(Roles = "Admin, User")]
     public class AdministrationController : Controller
     {
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly ILogger<AdministrationController> logger;
 
         public AdministrationController(RoleManager<IdentityRole> roleManager,
-                                        UserManager<ApplicationUser> userManager)
+                                        UserManager<ApplicationUser> userManager,
+                                        ILogger<AdministrationController> logger)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
+            this.logger = logger;
         }
 
 
@@ -63,7 +68,7 @@ namespace Administration.Controllers
         public IActionResult ListRoles()
         {
 
-            var roles = roleManager.Roles; 
+            var roles = roleManager.Roles;
             return View(roles);
 
         }
@@ -214,5 +219,148 @@ namespace Administration.Controllers
 
             return RedirectToAction("EditRole", new { Id = roleId });
         }
+
+        [HttpGet]
+        public IActionResult ListUsers()
+        {
+            var users = userManager.Users;
+            return View(users);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUser(EditUserViewModel model)
+        {
+            var user = await userManager.FindByIdAsync(model.Id);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User with Id = {model.Id} cannot be found";
+                return View("NotFound");
+            }
+            else
+            {
+                user.Email = model.Email;
+                user.UserName = model.UserName;
+                user.InternalUser = model.InternalUser;
+
+                var result = await userManager.UpdateAsync(user);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ListUsers");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User with Id = {id} cannot be found";
+                return View("NotFound");
+            }
+            else
+            {
+                var result = await userManager.DeleteAsync(user);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ListUsers");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                return View("ListUsers");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditUser(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User with Id = {id} cannot be found";
+                return View("NotFound");
+            }
+
+            // GetClaimsAsync retunrs the list of user Claims
+            var userClaims = await userManager.GetClaimsAsync(user);
+            // GetRolesAsync returns the list of user Roles
+            var userRoles = await userManager.GetRolesAsync(user);
+
+            var model = new EditUserViewModel
+            {
+                Id = user.Id,
+                Email = user.Email,
+                UserName = user.UserName,
+                InternalUser = user.InternalUser,
+                Claims = userClaims.Select(c => c.Value).ToList(),
+                Roles = userRoles
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteRole(string id)
+        {
+            var role = await roleManager.FindByIdAsync(id);
+
+            if (role == null)
+            {
+                ViewBag.ErrorMessage = $"Role with Id = {id} cannot be found";
+                return View("NotFound");
+            }
+            else
+            {
+                try { 
+                var result = await roleManager.DeleteAsync(role);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ListRoles");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                return View("ListRoles");
+            }
+                catch (DbUpdateException ex)
+                {
+                    //Log the exception to a file. We discussed logging to a file
+                    // using Nlog in Part 63 of ASP.NET Core tutorial
+                    logger.LogError($"Exception Occured : {ex}");
+                    // Pass the ErrorTitle and ErrorMessage that you want to show to
+                    // the user using ViewBag. The Error view retrieves this data
+                    // from the ViewBag and displays to the user.
+                    ViewBag.ErrorTitle = $"{role.Name} role is in use";
+                    ViewBag.ErrorMessage = $"{role.Name} role cannot be deleted as there are users in this role. If you want to delete this role, please remove the users from the role and then try to delete";
+                    return View("Error");
+
+
+                }
+            }
+
+        }
+
+
     }
 }
