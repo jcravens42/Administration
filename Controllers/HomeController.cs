@@ -6,6 +6,9 @@ using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
+using Administration.Security;
+using System.Linq;
 
 namespace Administration.Controllers
 {
@@ -14,31 +17,50 @@ namespace Administration.Controllers
     public class HomeController : Controller
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IDataProtector protector;
         private readonly IWebHostEnvironment hostingEnvironment;
         private readonly ILogger<HomeController> logger;
 
         public HomeController(IEmployeeRepository employeeRepository,
                               IWebHostEnvironment hostingEnvironment,
-                              ILogger<HomeController> logger)
+                              ILogger<HomeController> logger,
+                              IDataProtectionProvider dataProtectionProvider,
+                              DataProtectionPurposeStrings dataProtectionPurposeStrings)
         {
             _employeeRepository = employeeRepository;
+            // Pass the purpose string as a parameter
+            this.protector = dataProtectionProvider.CreateProtector(dataProtectionPurposeStrings.EmployeeIdRouteValue);
+
             this.hostingEnvironment = hostingEnvironment;
             this.logger = logger;
         }
+
+
         //   [Route("")]
         //   [Route("[action]")]
         //   [Route("~/")]
         [AllowAnonymous]
         public ViewResult Index()
         {
-            var model = _employeeRepository.GetAllEmployees();
+            var model = _employeeRepository.GetAllEmployees()
+                            .Select(e =>
+                            {
+                                // Encrypt the ID value and store in EncryptedId property
+                                e.EncryptedId = protector.Protect(e.Id.ToString());
+                                return e;
+                            });
             return View(model);
         }
 
         //   [Route("[action]/{id?}")]
         [AllowAnonymous]
-        public ViewResult Details(int? id)
+        public ViewResult Details(string id)
         {
+
+            // Decrypt the employee id using Unprotect method
+            string decryptedId = protector.Unprotect(id);
+            int decryptedIntId = Convert.ToInt32(decryptedId);
+
             //throw new Exception("Error in Details View");
 
             logger.LogTrace("Trace Log");
@@ -48,13 +70,13 @@ namespace Administration.Controllers
             logger.LogError("Error Log");
             logger.LogCritical("Critical Log");
 
-            Employee employee = _employeeRepository.GetEmployee(id.Value);
+            Employee employee = _employeeRepository.GetEmployee(decryptedIntId);
 
             if (employee == null)
             {
 
                 Response.StatusCode = 404;
-                return View("EmployeeNotFound", id.Value);
+                return View("EmployeeNotFound", decryptedId);
 
             };
 
